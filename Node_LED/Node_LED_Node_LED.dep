@@ -1,0 +1,24 @@
+Dependencies for Project 'Node_LED', Target 'Node_LED': (DO NOT MODIFY !)
+F (.\Node_LED.c)(0x5403C4A0)(-c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork -IC:\ti\TivaWare_C_Series-1.0 -I..\..\workspace --c99-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\Luminary-Drvmdk -DPART_TM4C123GH6PM -DTARGET_IS_BLIZZARD_RA3 -o .\rvmdk\node_led.o --omf_browse .\rvmdk\node_led.crf --depend .\rvmdk\node_led.d)
+I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C89844)
+I (C:\Keil\ARM\ARMCC\include\stdbool.h)(0x51C89844)
+I (C:\ti\TivaWare_C_Series-1.0\driverlib\sysctl.h)(0x51F3FA9B)
+I (C:\ti\TivaWare_C_Series-1.0\driverlib\ssi.h)(0x51F3FA9B)
+I (C:\ti\TivaWare_C_Series-1.0\driverlib\gpio.h)(0x51F3FA9B)
+I (C:\ti\TivaWare_C_Series-1.0\driverlib\pin_map.h)(0x51F3FA9B)
+I (C:\ti\TivaWare_C_Series-1.0\driverlib\rom.h)(0x51F3FA9B)
+I (C:\ti\TivaWare_C_Series-1.0\driverlib\rom_map.h)(0x51F3FA9B)
+I (C:\ti\TivaWare_C_Series-1.0\driverlib\interrupt.h)(0x51F3FA9B)
+I (C:\ti\TivaWare_C_Series-1.0\inc\hw_ints.h)(0x51F3FAA5)
+I (C:\ti\TivaWare_C_Series-1.0\inc\hw_memmap.h)(0x51F3FAA5)
+I (C:\Users\Sam\Dropbox\Documents\workspace\utilities\nRF24L01.h)(0x53168648)
+F (.\startup_rvmdk.S)(0x5205AF5C)(--cpu Cortex-M4.fp --pd "__EVAL SETA 1" -g --apcs=interwork --pd "__MICROLIB SETA 1"-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\Luminary-o .\rvmdk\startup_rvmdk.o --depend .\rvmdk\startup_rvmdk.d)
+F (C:\ti\TivaWare_C_Series-1.0\driverlib\rvmdk\driverlib.lib)(0x51F3FA9B)()
+F (.\readme.txt)(0x00000000)()
+F (..\utilities\nRF24L01.c)(0x531E7471)(-c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork -IC:\ti\TivaWare_C_Series-1.0 -I..\..\workspace --c99-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\Luminary-Drvmdk -DPART_TM4C123GH6PM -DTARGET_IS_BLIZZARD_RA3 -o .\rvmdk\nrf24l01.o --omf_browse .\rvmdk\nrf24l01.crf --depend .\rvmdk\nrf24l01.d)
+I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C89844)
+I (C:\Keil\ARM\ARMCC\include\stdbool.h)(0x51C89844)
+I (C:\ti\TivaWare_C_Series-1.0\driverlib\gpio.h)(0x51F3FA9B)
+I (C:\ti\TivaWare_C_Series-1.0\driverlib\ssi.h)(0x51F3FA9B)
+I (C:\ti\TivaWare_C_Series-1.0\inc\hw_memmap.h)(0x51F3FAA5)
+I (C:\Users\Sam\Dropbox\Documents\workspace\utilities\nRF24L01.h)(0x53168648)

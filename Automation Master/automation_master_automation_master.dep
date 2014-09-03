@@ -1,0 +1,54 @@
+Dependencies for Project 'automation_master', Target 'automation_master': (DO NOT MODIFY !)
+F (.\startup_TM4C129.s)(0x539E2537)(--cpu Cortex-M4.fp --pd "__EVAL SETA 1" -g --apcs=interwork --pd "__MICROLIB SETA 1"-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\TI\TM4C129-o .\rvmdk\startup_tm4c129.o --depend .\rvmdk\startup_tm4c129.d)
+F (.\automation_master.c)(0x53A6FB44)(-c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork -IC:\ti\TivaWare_C_Series-2.0.1.11577 -I..\..\workspace --c99-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\TI\TM4C129-Drvmdk -DPART_TM4C129XNCZAD -DTARGET_IS_SNOWFLAKE_RA0 -DUART_BUFFERED -DTM4C129XNCZAD-o .\rvmdk\automation_master.o --omf_browse .\rvmdk\automation_master.crf --depend .\rvmdk\automation_master.d)
+I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C89844)
+I (C:\Keil\ARM\ARMCC\include\stdbool.h)(0x51C89844)
+I (C:\Keil\ARM\ARMCC\include\string.h)(0x51C89844)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\driverlib\gpio.h)(0x52D4653E)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\driverlib\interrupt.h)(0x52D4653E)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\driverlib\pin_map.h)(0x52D4653E)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\driverlib\rom.h)(0x52D4653E)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\driverlib\rom_map.h)(0x52D4653E)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\driverlib\ssi.h)(0x52D4653E)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\driverlib\sysctl.h)(0x52D4653E)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\driverlib\uart.h)(0x52D4653E)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\inc\hw_memmap.h)(0x52D4656E)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\inc\hw_ints.h)(0x52D4656E)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\utils\uartstdio.h)(0x52D4658A)
+I (C:\Keil\ARM\ARMCC\include\stdarg.h)(0x51C89844)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\utils\cmdline.h)(0x52D4658A)
+I (C:\Users\Sam\Dropbox\Documents\workspace\utilities\nRF24L01.h)(0x53168648)
+F (..\utilities\nRF24L01.c)(0x531E7471)(-c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork -IC:\ti\TivaWare_C_Series-2.0.1.11577 -I..\..\workspace --c99-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\TI\TM4C129-Drvmdk -DPART_TM4C129XNCZAD -DTARGET_IS_SNOWFLAKE_RA0 -DUART_BUFFERED -DTM4C129XNCZAD-o .\rvmdk\nrf24l01.o --omf_browse .\rvmdk\nrf24l01.crf --depend .\rvmdk\nrf24l01.d)
+I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C89844)
+I (C:\Keil\ARM\ARMCC\include\stdbool.h)(0x51C89844)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\driverlib\gpio.h)(0x52D4653E)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\driverlib\ssi.h)(0x52D4653E)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\inc\hw_memmap.h)(0x52D4656E)
+I (C:\Users\Sam\Dropbox\Documents\workspace\utilities\nRF24L01.h)(0x53168648)
+F (C:\ti\TivaWare_C_Series-2.0.1.11577\driverlib\rvmdk\driverlib.lib)(0x52D4653F)()
+F (C:\ti\TivaWare_C_Series-2.0.1.11577\utils\cmdline.c)(0x52D4658A)(-c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork -IC:\ti\TivaWare_C_Series-2.0.1.11577 -I..\..\workspace --c99-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\TI\TM4C129-Drvmdk -DPART_TM4C129XNCZAD -DTARGET_IS_SNOWFLAKE_RA0 -DUART_BUFFERED -DTM4C129XNCZAD-o .\rvmdk\cmdline.o --omf_browse .\rvmdk\cmdline.crf --depend .\rvmdk\cmdline.d)
+I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C89844)
+I (C:\Keil\ARM\ARMCC\include\stdbool.h)(0x51C89844)
+I (C:\Keil\ARM\ARMCC\include\string.h)(0x51C89844)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\utils\cmdline.h)(0x52D4658A)
+F (C:\ti\TivaWare_C_Series-2.0.1.11577\utils\uartstdio.c)(0x52D4658A)(-c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork -IC:\ti\TivaWare_C_Series-2.0.1.11577 -I..\..\workspace --c99-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\TI\TM4C129-Drvmdk -DPART_TM4C129XNCZAD -DTARGET_IS_SNOWFLAKE_RA0 -DUART_BUFFERED -DTM4C129XNCZAD-o .\rvmdk\uartstdio.o --omf_browse .\rvmdk\uartstdio.crf --depend .\rvmdk\uartstdio.d)
+I (C:\Keil\ARM\ARMCC\include\stdbool.h)(0x51C89844)
+I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C89844)
+I (C:\Keil\ARM\ARMCC\include\stdarg.h)(0x51C89844)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\inc\hw_ints.h)(0x52D4656E)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\inc\hw_memmap.h)(0x52D4656E)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\inc\hw_types.h)(0x52D4656E)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\inc\hw_uart.h)(0x52D4656E)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\driverlib\debug.h)(0x52D4653E)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\driverlib\interrupt.h)(0x52D4653E)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\driverlib\rom.h)(0x52D4653E)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\driverlib\rom_map.h)(0x52D4653E)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\driverlib\sysctl.h)(0x52D4653E)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\driverlib\uart.h)(0x52D4653E)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\utils\uartstdio.h)(0x52D4658A)
+F (C:\ti\TivaWare_C_Series-2.0.1.11577\utils\ustdlib.c)(0x52D4658A)(-c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork -IC:\ti\TivaWare_C_Series-2.0.1.11577 -I..\..\workspace --c99-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\TI\TM4C129-Drvmdk -DPART_TM4C129XNCZAD -DTARGET_IS_SNOWFLAKE_RA0 -DUART_BUFFERED -DTM4C129XNCZAD-o .\rvmdk\ustdlib.o --omf_browse .\rvmdk\ustdlib.crf --depend .\rvmdk\ustdlib.d)
+I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C89844)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\driverlib\debug.h)(0x52D4653E)
+I (C:\ti\TivaWare_C_Series-2.0.1.11577\utils\ustdlib.h)(0x52D4658A)
+I (C:\Keil\ARM\ARMCC\include\stdarg.h)(0x51C89844)
+I (C:\Keil\ARM\ARMCC\include\time.h)(0x51C89844)
