@@ -36,6 +36,9 @@ int CMD_verbose(int argc, char **argv);
 int CMD_LED(int argc, char **argv);
 
 bool g_bCMDReturn = false;
+bool g_bVerbose = false;
+
+uint32_t gui32SysClock;
 
 //*****************************************************************************
 //
@@ -44,19 +47,30 @@ bool g_bCMDReturn = false;
 //*****************************************************************************
 static char g_cInput[128];
 
-bool g_bVerbose = false;
 uint8_t g_pui8AckData[5] = { 0xFF };
 
+//*****************************************************************************
+//
+// A table of terminal commands, callback functions, and descriptions, as
+// needed by the TivaWare command line processor.
+//
+//*****************************************************************************
 tCmdLineEntry g_psCmdTable[] =
 {
     {"help",     CMD_help,      "    : Display list of commands" },
-    //{"toggle",   CMD_toggle,    " : Toggle the remote LED"    },
     {"status",   CMD_status,    "  : Read the radio's status register"},
     {"verbose",  CMD_verbose,   " : Toggle verbosity" },
-    {"LED",      CMD_LED,       "uweb"},
+    {"LED",      CMD_LED,       "     : \"LED state id\", where state = [on|off] and id = [0-4]"},
     { 0, 0, 0 }
 };
 
+//*****************************************************************************
+//
+// Takes two arguments, the first is either "on" or "off", the second is a
+// number between 0 and 5 indicating to which slave to send the command. Sends
+// a command to the indicated to slave to turn it's LED either on or off.
+//
+//*****************************************************************************
 int
 CMD_LED(int argc, char **argv)
 {
@@ -82,7 +96,11 @@ CMD_LED(int argc, char **argv)
     return CMDLINE_TOO_FEW_ARGS;
 }
 
-
+//*****************************************************************************
+//
+// Print the contents of the radio's status register to the serial terminal.
+//
+//*****************************************************************************
 int
 CMD_status(int argc, char **argv)
 {
@@ -92,9 +110,11 @@ CMD_status(int argc, char **argv)
 }
 
 
+//*****************************************************************************
 //
 // Write a help message to the serial terminal.
 //
+//*****************************************************************************
 int
 CMD_help(int argc, char **argv)
 {
@@ -111,6 +131,11 @@ CMD_help(int argc, char **argv)
     return(0);
 }
 
+//*****************************************************************************
+//
+// Toggle verbose output mode.
+//
+//*****************************************************************************
 int
 CMD_verbose(int argc, char **argv)
 {
@@ -128,7 +153,8 @@ CMD_verbose(int argc, char **argv)
 
 //*****************************************************************************
 //
-// Flash the LED to signal an error.
+// Flash the LED to signal an error and print an error message, MSG, to the
+// serial terminal.
 //
 //*****************************************************************************
 void
@@ -155,8 +181,11 @@ ErrorNotify(char* msg)
     }
 }
 
-uint32_t gui32SysClock;
-
+//*****************************************************************************
+//
+// Handle interrupts from the radio.
+//
+//*****************************************************************************
 void GPIOPortHIntHandler()
 {
     uint8_t ui8RXData;
@@ -338,6 +367,11 @@ ConfigureUART(void)
     UARTStdioConfig(0, 115200, 16000000);
 }
 
+//*****************************************************************************
+//
+// Setup peripherals, clock gating, and pin-muxing.
+//
+//*****************************************************************************
 void
 setup()
 { 

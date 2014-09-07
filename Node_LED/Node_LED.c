@@ -1,3 +1,12 @@
+//*****************************************************************************
+//
+//-------------------------------- LED Node -----------------------------------
+//
+// Simple LED slave node for the home automation system.
+//
+// Copyright (c) 2014 Sam Friedman. All Rights Reserved.
+//
+//*****************************************************************************
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -18,8 +27,9 @@
 #define PIN_IRQ
 #define PIN_CE
 
-bool g_bLEDOn = false;
-uint8_t g_ui8RXCount = 0;
+//
+// Unique 8-bit ID for this node.
+//
 uint8_t g_ui8ID;
 
 void
@@ -55,13 +65,14 @@ GPIOPortBIntHandler(void)
     //
     if (ui8RXData == 0xA1) {
         GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, GPIO_PIN_3);
-        g_bLEDOn = false;
     } else if (ui8RXData == 0xA2) {
         GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0x00);
-        g_bLEDOn = true;
     }
 }
 
+//
+// Setup peripherals, clock gating, and pin-muxing.
+//
 void
 setup()
 {
@@ -113,6 +124,9 @@ setup()
 int
 main(void)
 {
+    //
+    // Contents of the user-programmable non-volatile memory
+    //
     uint32_t ui32User0, ui32User1;
     
     //
@@ -121,16 +135,20 @@ main(void)
     MAP_SysCtlClockSet(SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ
                    | SYSCTL_SYSDIV_2_5);
 
+    //
+    // Setup peripherals
+    //
     setup();
 
+    //
+    // Load the 8-bit unique node ID from the non-volatile user registers.
+    //
     FlashUserGet(&ui32User0, &ui32User1);
     g_ui8ID = ui32User0 & 0xFF;
 
     //
-    // Set the radio address width to 3 bytes
+    // Delay for radio startup.
     //
-    //nRFSetAddressWidth(nRF_AW_3_BYTES);
-
     SysCtlDelay(1000);
 
     //
@@ -140,34 +158,30 @@ main(void)
     nRFFeatureSet(nRF_EN_DPL | nRF_EN_ACK_PAY);
     nRFDynPayloadEnable(nRF_DATA_PIPE_0);
 
-    //ui8AckData = 0xA5;
-    //nRFDataPutAck(0, &ui8AckData, 1);
-
     //
     // Enable interrupts from the radio
     //
     GPIOIntEnable(GPIO_PORTB_BASE, GPIO_INT_PIN_0);
     MAP_IntEnable(INT_GPIOB_BLIZZARD);
     MAP_IntMasterEnable();
+    
     //
     // Set the TX payload
     //
     nRFDataPut(&g_ui8ID, 1);
-
     nRFPayloadReuseEnable();
 
-    //
-    // Assert the radio's chip enable
-    //
-    //GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_1, GPIO_PIN_1);
 
     //
-    // Loop forever
+    // Loop forever, requesting instructions at regular intervals.
     //
     while(1)
     {
         SysCtlDelay(100000000);
 
+        //
+        // Pulse the radio's chip enable.
+        //
         GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_1, GPIO_PIN_1);
         SysCtlDelay(500);
         GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_1, 0x00);
