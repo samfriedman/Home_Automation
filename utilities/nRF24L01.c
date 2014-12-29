@@ -1,11 +1,12 @@
 //*****************************************************************************
 //
-// nRF24L01.c - Driver for the nRF24L01 radio transceiver.
+// nRF24L01.c - Driver for the nRF24L01 radio transceiver. 269
 //
 //*****************************************************************************
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <string.h>
 #include "driverlib/gpio.h"
 #include "driverlib/ssi.h"
 
@@ -24,47 +25,29 @@
 void
 nRFSetAddressWidth(uint8_t ui8Width)
 {
-    GPIOPinWrite(CS_PORT, CS_PIN, 0x00);
-    SSIDataPut(SSI2_BASE, nRF_WR_REG | nRF_O_SETUP_AW);
-    SSIDataPut(SSI2_BASE, ui8Width);
-    while(SSIBusy(SSI2_BASE))
-    {
-        // Wait for SSI to finish transmitting
-    }
-    GPIOPinWrite(CS_PORT, CS_PIN, CS_PIN);
+    uint8_t cmd[] = {nRF_WR_REG | nRF_O_SETUP_AW, ui8Width};
+    SPISend(2, cmd);
 }
 
 void
 nRFPayloadReuseEnable()
 {
-    GPIOPinWrite(CS_PORT, CS_PIN, 0x00);
-    SSIDataPut(SSI2_BASE, nRF_REUSE_TX_PL);
-    while(SSIBusy(SSI2_BASE))
-    {
-    }
-    GPIOPinWrite(CS_PORT, CS_PIN, CS_PIN);
+    uint8_t cmd[] = {nRF_REUSE_TX_PL};
+    SPISend(1, cmd);
 }
 
 void
 nRFFlushTX()
 {
-    GPIOPinWrite(CS_PORT, CS_PIN, 0x00);
-    SSIDataPut(SSI2_BASE, nRF_FLUSH_TX);
-    while(SSIBusy(SSI2_BASE))
-    {
-    }
-    GPIOPinWrite(CS_PORT, CS_PIN, CS_PIN);
+    uint8_t cmd[] = {nRF_FLUSH_TX};
+    SPISend(1, cmd);
 }
 
 void
 nRFFlushRX()
 {
-    GPIOPinWrite(CS_PORT, CS_PIN, 0x00);
-    SSIDataPut(SSI2_BASE, nRF_FLUSH_RX);
-    while(SSIBusy(SSI2_BASE))
-    {
-    }
-    GPIOPinWrite(CS_PORT, CS_PIN, CS_PIN);
+    uint8_t cmd[] = {nRF_FLUSH_RX};
+    SPISend(1, cmd);
 }
 
 //
@@ -92,59 +75,33 @@ nRFClearInterrupt()
     return ui32RXData;
 }
 void
-nRFDataPut(uint8_t* pui8Data, uint32_t ui32Len)
+nRFDataPut(uint8_t* pui8Data, int iLen)
 {
-    GPIOPinWrite(CS_PORT, CS_PIN, 0x00);
-    SSIDataPut(SSI2_BASE, nRF_WR_TX_PL);
-    while (ui32Len > 0)
-    {
-        SSIDataPut(SSI2_BASE, *pui8Data);
-        pui8Data++;
-        ui32Len--;
-    }
-    while(SSIBusy(SSI2_BASE))
-    {
-    }
-    GPIOPinWrite(CS_PORT, CS_PIN, CS_PIN);
+    uint8_t cmd[iLen + 1];
+    cmd[0] = nRF_WR_TX_PL;
+    memcpy(cmd + 1, pui8Data, iLen);
+    SPISend(iLen + 1, cmd);
 }
 
 void
 nRFConfig(uint8_t ui8Flags)
 {
-    GPIOPinWrite(CS_PORT, CS_PIN, 0x00);
-    SSIDataPut(SSI2_BASE, nRF_WR_REG | nRF_O_CONFIG);
-    SSIDataPut(SSI2_BASE, ui8Flags);
-    while(SSIBusy(SSI2_BASE))
-    {
-        // Wait until SSI is done transmitting.
-    }
-    GPIOPinWrite(CS_PORT, CS_PIN, CS_PIN);
+    uint8_t cmd[] = {nRF_WR_REG | nRF_O_CONFIG, ui8Flags};
+    SPISend(2, cmd);
 }
 
 void
-nRFFeatureSet(uint32_t ui32Flags)
+nRFFeatureSet(uint8_t ui8Flags)
 {
-    GPIOPinWrite(CS_PORT, CS_PIN, 0x00);
-    SSIDataPut(SSI2_BASE, nRF_WR_REG | nRF_O_FEATURE);
-    SSIDataPut(SSI2_BASE, ui32Flags);
-    while(SSIBusy(SSI2_BASE))
-    {
-        // Wait until SSI is done transmitting.
-    }
-    GPIOPinWrite(CS_PORT, CS_PIN, CS_PIN);
+    uint8_t cmd[] = {nRF_WR_REG | nRF_O_FEATURE, ui8Flags};
+    SPISend(2, cmd);
 }
 
 void
-nRFSetPayloadWidth(uint32_t ui32Width)
+nRFSetPayloadWidth(uint8_t ui8Width)
 {
-    GPIOPinWrite(CS_PORT, CS_PIN, 0x00);
-    SSIDataPut(SSI2_BASE, nRF_WR_REG | nRF_O_RX_PW_P0);
-    SSIDataPut(SSI2_BASE, ui32Width);
-    while(SSIBusy(SSI2_BASE))
-    {
-        // Wait until SSI is done transmitting.
-    }
-    GPIOPinWrite(CS_PORT, CS_PIN, CS_PIN);
+    uint8_t cmd[] = {nRF_WR_REG | nRF_O_RX_PW_P0, ui8Width};
+    SPISend(2, cmd);
 }
 
 //
@@ -154,7 +111,11 @@ nRFSetPayloadWidth(uint32_t ui32Width)
 uint32_t
 nRFGetPayloadWidth(void)
 {
-    uint32_t ui32RXData;
+    uint8_t cmd[] = {nRF_RD_RX_PL_WID, 0x00};
+    uint8_t RXData[2];
+    SPIReceive(2, cmd, RXData);
+    return RXData[1];
+/*    uint32_t ui32RXData;
     while(SSIDataGetNonBlocking(SSI2_BASE, &ui32RXData))
     {
         // Clear the SSI RX FIFO
@@ -165,99 +126,85 @@ nRFGetPayloadWidth(void)
     SSIDataGet(SSI2_BASE, &ui32RXData);
     SSIDataGet(SSI2_BASE, &ui32RXData);
     GPIOPinWrite(CS_PORT, CS_PIN, CS_PIN);
-    return ui32RXData;
+    return ui32RXData;*/
 }
 
 void
-nRFDataPutAck(uint32_t ui32Pipe, uint8_t* pui8Data, uint32_t ui32Len)
+nRFDataPutAck(int iPipe, uint8_t* pui8Data, int iLen)
 {
-    GPIOPinWrite(CS_PORT, CS_PIN, 0x00);
-    SSIDataPut(SSI2_BASE, nRF_WR_ACK_PL | ui32Pipe);
-    while (ui32Len > 0)
-    {
-        SSIDataPut(SSI2_BASE, *pui8Data);
-        pui8Data++;
-        ui32Len--;
-    }
-    while(SSIBusy(SSI2_BASE))
-    {
-    }
-    GPIOPinWrite(CS_PORT, CS_PIN, CS_PIN);
+    uint8_t cmd[iLen + 1];
+    cmd[0] = nRF_WR_ACK_PL | iPipe;
+    memcpy(cmd + 1, pui8Data, iLen);
+    SPISend(iLen + 1, cmd);
 }
 
 void
-nRFDynPayloadEnable(uint32_t ui32Pipe)
+nRFDynPayloadEnable(int iPipe)
 {
-    GPIOPinWrite(CS_PORT, CS_PIN, 0x00);
-    SSIDataPut(SSI2_BASE, nRF_WR_REG | nRF_O_DYNPD);
-    SSIDataPut(SSI2_BASE, ui32Pipe);
-    while(SSIBusy(SSI2_BASE))
-    {
-        // Wait for SSI to finish transmitting
-    }
-    GPIOPinWrite(CS_PORT, CS_PIN, CS_PIN);
+    uint8_t cmd[] = {nRF_WR_REG | nRF_O_DYNPD, iPipe};
+    SPISend(2, cmd);
 }
 
 void
-nRFDataGet(uint8_t* pui8Data, uint32_t ui32Len)
+nRFDataGet(uint8_t* pui8Data, int iLen)
 {
-    uint32_t ui32RXData;
-    GPIOPinWrite(CS_PORT, CS_PIN, 0x00);
-    SSIDataPut(SSI2_BASE, nRF_RD_RX_PL);
-    while(SSIBusy(SSI2_BASE))
-    {
-        // Wait for SSI to finish transmitting
-    }
-    while (SSIDataGetNonBlocking(SSI2_BASE, &ui32RXData))
-    {
-    }
-    while (ui32Len > 0)
-    {
-        SSIDataPut(SSI2_BASE, 0x00);
-        SSIDataGet(SSI2_BASE, &ui32RXData);
-        *pui8Data = ui32RXData & 0x000000FF;
-        ui32Len--;
-        pui8Data++;
-    }
-    while(SSIBusy(SSI2_BASE))
-    {
-        // Wait for SSI to finish transmitting
-    }
-    GPIOPinWrite(CS_PORT, CS_PIN, CS_PIN);
+    uint8_t cmd[iLen + 1];
+    uint8_t RXData[iLen + 1];
+    cmd[0] = nRF_RD_RX_PL;
+    SPIReceive(iLen + 1, cmd, RXData);
+    memcpy(pui8Data, RXData+1, iLen);
+    
+//    uint32_t ui32RXData;
+//    GPIOPinWrite(CS_PORT, CS_PIN, 0x00);
+//    SSIDataPut(SSI2_BASE, nRF_RD_RX_PL);
+//    while(SSIBusy(SSI2_BASE))
+//    {
+//        // Wait for SSI to finish transmitting
+//    }
+//    while (SSIDataGetNonBlocking(SSI2_BASE, &ui32RXData))
+//    {
+//    }
+//    while (iLen > 0)
+//    {
+//        SSIDataPut(SSI2_BASE, 0x00);
+//        SSIDataGet(SSI2_BASE, &ui32RXData);
+//        *pui8Data = ui32RXData & 0x000000FF;
+//        iLen--;
+//        pui8Data++;
+//    }
+//    while(SSIBusy(SSI2_BASE))
+//    {
+//        // Wait for SSI to finish transmitting
+//    }
+//    GPIOPinWrite(CS_PORT, CS_PIN, CS_PIN);
 }
 
 void
-nRFSetAddress(uint32_t ui32DataPipe, uint8_t* pui8Address, uint32_t ui32Len)
+nRFSetAddress(int iDataPipe, uint8_t* pui8Address, int iLen)
 {
-    GPIOPinWrite(CS_PORT, CS_PIN, 0x00);
-    SSIDataPut(SSI2_BASE, nRF_WR_REG | (nRF_O_RX_ADDR_P0 + ui32DataPipe));
-    while(ui32Len > 0)
-    {
-        SSIDataPut(SSI2_BASE, *pui8Address);
-        ui32Len--;
-        pui8Address++;
-    }
-    GPIOPinWrite(CS_PORT, CS_PIN, CS_PIN);
+    uint8_t cmd[iLen + 1];
+    cmd[0] = nRF_WR_REG | (nRF_O_RX_ADDR_P0 + iDataPipe);
+    memcpy(cmd + 1, pui8Address, iLen);
+    SPISend(iLen + 1, cmd);
 }
 
 void
-nRFSetTXAddress(uint8_t* pui8Address, uint32_t ui32Len)
+nRFSetTXAddress(uint8_t* pui8Address, int iLen)
 {
-    GPIOPinWrite(CS_PORT, CS_PIN, 0x00);
-    SSIDataPut(SSI2_BASE, nRF_WR_REG | nRF_O_TX_ADDR);
-    while(ui32Len > 0)
-    {
-        SSIDataPut(SSI2_BASE, *pui8Address);
-        ui32Len--;
-        pui8Address++;
-    }
-    GPIOPinWrite(CS_PORT, CS_PIN, CS_PIN);
+    uint8_t cmd[iLen + 1];
+    cmd[0] = nRF_WR_REG | nRF_O_TX_ADDR;
+    memcpy(cmd + 1, pui8Address, iLen);
+    SPISend(iLen + 1, cmd);
 }
 
 uint8_t
 nRFStatusGet(void)
 {
-    uint32_t ui32RXData;
+    uint8_t cmd = nRF_NOP;
+    uint8_t RXData;
+    SPIReceive(1, &cmd, &RXData);
+    return RXData;
+    /*uint32_t ui32RXData;
     while(SSIDataGetNonBlocking(SSI2_BASE, &ui32RXData))
     {
     }
@@ -265,5 +212,5 @@ nRFStatusGet(void)
     SSIDataPut(SSI2_BASE, nRF_NOP);
     SSIDataGet(SSI2_BASE, &ui32RXData);
     GPIOPinWrite(CS_PORT, CS_PIN, CS_PIN);
-    return ui32RXData;
+    return ui32RXData;*/
 }

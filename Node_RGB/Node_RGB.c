@@ -18,6 +18,7 @@
 #include "driverlib/rom.h"
 #include "driverlib/rom_map.h"
 #include "driverlib/interrupt.h"
+#include "drivers/rgb.h"
 
 #include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
@@ -27,27 +28,6 @@
 #define PIN_IRQ
 #define PIN_CE
 
-#ifdef TARGET_IS_BLIZZARD_RA3
-    #define CS_PORT GPIO_PORTE_BASE
-    #define CS_PIN  GPIO_PIN_0
-#else
-    #define CS_PORT GPIO_PORTQ_BASE
-    #define CS_PIN  GPIO_PIN_7
-#endif
-void SPISend(int iLen, uint8_t *data)
-{
-    GPIOPinWrite(CS_PORT, CS_PIN, 0x00);
-    while(iLen-- > 0)
-    {
-        SSIDataPut(SSI2_BASE, *data++);
-    }
-    while(SSIBusy(SSI2_BASE))
-    {
-        // Wait for SSI to finish transmitting
-    }
-    GPIOPinWrite(CS_PORT, CS_PIN, CS_PIN);
-}
-
 //
 // Unique 8-bit ID for this node.
 //
@@ -56,7 +36,8 @@ uint8_t g_ui8ID;
 void
 GPIOPortBIntHandler(void)
 {
-    uint8_t ui8RXData;
+    uint8_t ui8RXData[8];
+    uint32_t pui32Colors[3];
 
     //
     // Clear the interrupt.
@@ -79,15 +60,17 @@ GPIOPortBIntHandler(void)
     //
     // Flush the RX FIFO.
     //
-    nRFDataGet(&ui8RXData, nRFGetPayloadWidth());
+    nRFDataGet(ui8RXData, nRFGetPayloadWidth());
 
     //
     // Toggle the LED
     //
-    if (ui8RXData == 0xA1) {
-        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, GPIO_PIN_3);
-    } else if (ui8RXData == 0xA2) {
-        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0x00);
+    if (*ui8RXData == 0xA3) {
+        // Set RGB values
+        pui32Colors[0] = *((uint16_t *) (ui8RXData + 2));
+        pui32Colors[1] = *((uint16_t *) (ui8RXData + 4));
+        pui32Colors[2] = *((uint16_t *) (ui8RXData + 6));
+        RGBColorSet(pui32Colors);
     }
 }
 
@@ -139,6 +122,7 @@ setup()
     MAP_SSIConfigSetExpClk(SSI2_BASE, MAP_SysCtlClockGet(), SSI_FRF_MOTO_MODE_0,
                            SSI_MODE_MASTER, 8000000, 8);
     MAP_SSIEnable(SSI2_BASE);
+    RGBInit(1);
 }
 
 

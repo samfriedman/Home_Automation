@@ -8,3 +8,7 @@
 *.plg
 *.crf
 *.Sam
+*.htm
+*.d
+*.lnp
+*.dep

@@ -34,11 +34,25 @@ int CMD_help(int argc, char **argv);
 int CMD_status(int argc, char **argv);
 int CMD_verbose(int argc, char **argv);
 int CMD_LED(int argc, char **argv);
+int CMD_RGB(int argc, char **argv);
 
 bool g_bCMDReturn = false;
 bool g_bVerbose = false;
 
 uint32_t gui32SysClock;
+
+typedef struct
+{
+    //
+    //! A pointer to a string containing the name of the command.
+    //
+    uint8_t ui8Len;
+
+    char pcCmd[32];
+}
+tAutoCmd;
+
+#define EMPTY_COMMAND {0, {0x00}}
 
 //*****************************************************************************
 //
@@ -47,7 +61,7 @@ uint32_t gui32SysClock;
 //*****************************************************************************
 static char g_cInput[128];
 
-uint8_t g_pui8AckData[5] = { 0xFF };
+tAutoCmd g_psAckData[5] = { EMPTY_COMMAND };
 
 //*****************************************************************************
 //
@@ -61,8 +75,79 @@ tCmdLineEntry g_psCmdTable[] =
     {"status",   CMD_status,    "  : Read the radio's status register"},
     {"verbose",  CMD_verbose,   " : Toggle verbosity" },
     {"LED",      CMD_LED,       "     : \"LED state id\", where state = [on|off] and id = [0-4]"},
+    {"RGB",      CMD_RGB,       "     : \"RGB id R G B\", where id = [0-4] and R,G,B = [0-(2^16-1)]"},
     { 0, 0, 0 }
 };
+#ifdef TARGET_IS_BLIZZARD_RA3
+    #define CS_PORT GPIO_PORTE_BASE
+    #define CS_PIN  GPIO_PIN_0
+#else
+    #define CS_PORT GPIO_PORTQ_BASE
+    #define CS_PIN  GPIO_PIN_7
+#endif
+void SPISend(int iLen, uint8_t *data)
+{
+    GPIOPinWrite(CS_PORT, CS_PIN, 0x00);
+    while(iLen-- > 0)
+    {
+        SSIDataPut(SSI2_BASE, *data++);
+    }
+    while(SSIBusy(SSI2_BASE))
+    {
+        // Wait for SSI to finish transmitting
+    }
+    GPIOPinWrite(CS_PORT, CS_PIN, CS_PIN);
+}
+
+void SPIReceive(int iLen, uint8_t *p_ui8TXData, uint8_t *p_ui8RXData)
+{
+    uint32_t ui32RXData;
+    while(SSIBusy(SSI2_BASE))
+    {
+        // Wait for SSI to finish transmitting
+    }
+    while (SSIDataGetNonBlocking(SSI2_BASE, &ui32RXData))
+    {
+    }
+    GPIOPinWrite(CS_PORT, CS_PIN, 0x00);
+    while (iLen-- > 0)
+    {
+        SSIDataPut(SSI2_BASE, *(p_ui8TXData++));
+        SSIDataGet(SSI2_BASE, &ui32RXData);
+        *(p_ui8RXData++) = ui32RXData & 0x000000FF;
+    }
+    while(SSIBusy(SSI2_BASE))
+    {
+        // Wait for SSI to finish transmitting
+    }
+    GPIOPinWrite(CS_PORT, CS_PIN, CS_PIN);
+}
+
+
+int
+CMD_RGB(int argc, char **argv)
+{
+    uint32_t ui32SlaveIndex;
+    uint16_t ui16Red, ui16Green, ui16Blue;
+    char* throwaway;
+    if (argc > 4)
+    {
+        ui32SlaveIndex = ustrtoul(*(argv + 1), &throwaway, 10);
+        g_psAckData[ui32SlaveIndex].ui8Len = 8;
+        g_psAckData[ui32SlaveIndex].pcCmd[0] = 0xA3;
+        ui16Red = ustrtoul(*(argv + 2), &throwaway, 10);
+        ui16Green = ustrtoul(*(argv + 3), &throwaway, 10);
+        ui16Blue = ustrtoul(*(argv + 4), &throwaway, 10);
+        *((uint16_t*) (g_psAckData[ui32SlaveIndex].pcCmd + 2)) = ui16Red;
+        *((uint16_t*) (g_psAckData[ui32SlaveIndex].pcCmd + 4)) = ui16Green;
+        *((uint16_t*) (g_psAckData[ui32SlaveIndex].pcCmd + 6)) = ui16Blue;
+        g_bCMDReturn = true;
+        return 0;
+    }
+    g_bCMDReturn = true;
+    return CMDLINE_TOO_FEW_ARGS;
+}
+        
 
 //*****************************************************************************
 //
@@ -81,10 +166,12 @@ CMD_LED(int argc, char **argv)
         ui32SlaveIndex = ustrtoul(*(argv + 2), &throwaway, 10);
         if (!strcmp(*(argv + 1),"on"))
         {
-            g_pui8AckData[ui32SlaveIndex] = 0xA1;
+            g_psAckData[ui32SlaveIndex].ui8Len = 1;
+            g_psAckData[ui32SlaveIndex].pcCmd[0] = 0xA1;
         } else if (!strcmp(*(argv + 1),"off"))
         {
-            g_pui8AckData[ui32SlaveIndex] = 0xA2;
+            g_psAckData[ui32SlaveIndex].ui8Len = 1;
+            g_psAckData[ui32SlaveIndex].pcCmd[0] = 0xA2;
         } else {
             g_bCMDReturn = true;
             return CMDLINE_INVALID_ARG;
@@ -223,10 +310,10 @@ void GPIOPortHIntHandler()
         UARTprintf("Request received from Node %d\n", iSlaveIndex);
     }
     
-    if (g_pui8AckData[iSlaveIndex] != 0xFF) {
-        nRFDataPutAck(0, g_pui8AckData + iSlaveIndex, 1);
-        UARTprintf("Responding with %02x\n", g_pui8AckData[iSlaveIndex]);
-        g_pui8AckData[iSlaveIndex] = 0xFF;
+    if (g_psAckData[iSlaveIndex].ui8Len != 0) {
+        nRFDataPutAck(0, g_psAckData[iSlaveIndex].pcCmd, g_psAckData[iSlaveIndex].ui8Len);
+        UARTprintf("Responding with %02x\n", g_psAckData[iSlaveIndex].pcCmd[0]);
+        g_psAckData[iSlaveIndex].ui8Len = 0;
     }
 }
 

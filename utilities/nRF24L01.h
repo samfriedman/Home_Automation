@@ -96,21 +96,24 @@
 #define nRF_AW_4_BYTES          0x10
 #define nRF_AW_5_BYTES          0x11
 
+void SPISend(int iLen, uint8_t *data);
+void SPIReceive(int iLen, uint8_t *p_ui8TXData, uint8_t *p_ui8RXData);
+
 void nRFSetAddressWidth(uint8_t ui8Width);
 void nRFPayloadReuseEnable(void);
 void nRFFlushTX(void);
 void nRFFlushRX(void);
 uint8_t nRFClearInterrupt(void);
-void nRFDataPut(uint8_t* pui8Data, uint32_t ui32Len);
-void nRFDataGet(uint8_t* pui8Data, uint32_t ui32Len);
-void nRFDataPutAck(uint32_t ui32Pipe, uint8_t* pui8Data, uint32_t ui32Len);
+void nRFDataPut(uint8_t* pui8Data, int iLen);
+void nRFDataGet(uint8_t* pui8Data, int iLen);
+void nRFDataPutAck(int iPipe, uint8_t* pui8Data, int iLen);
 void nRFConfig(uint8_t ui8Flags);
-void nRFFeatureSet(uint32_t ui32Flags);
-void nRFDynPayloadEnable (uint32_t ui32Pipe);
-void nRFSetPayloadWidth(uint32_t ui32Width);
+void nRFFeatureSet(uint8_t ui8Flags);
+void nRFDynPayloadEnable (int iPipe);
+void nRFSetPayloadWidth(uint8_t ui8Width);
 uint32_t nRFGetPayloadWidth(void);
-void nRFSetAddress(uint32_t ui32DataPipe, uint8_t* pui8Address, uint32_t ui32Len);
-void nRFSetTXAddress(uint8_t* pui8Address, uint32_t ui32Len);
+void nRFSetAddress(int iDataPipe, uint8_t* pui8Address, int iLen);
+void nRFSetTXAddress(uint8_t* pui8Address, int iLen);
 uint8_t nRFStatusGet(void);
 
 #endif
